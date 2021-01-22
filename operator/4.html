@@ -22,10 +22,18 @@
         }
         console.log(!(a===1));
 
-        const passwordNode = document.querySelector('[name="password"]');
+        function query(name) {
+            return document.querySelector(`[name='${name}']`);
+        }
+
         const spanNode = document.querySelector("#msg");
-        document.querySelector('[name="rePassword"]').addEventListener("keyup",function() {
-            spanNode.innerHTML = this.value === passwordNode.value ? "密码验证通过":"密码验证不相同";
+        let inputs = document.querySelectorAll(
+            "[name='password'],[name='rePassword']"
+        );
+        [...inputs].map(node => {
+            node.addEventListener("keyup", () => {
+                spanNode.innerHTML = (query("password").value !== query("rePassword").value || query("password").value.length <= 5) ? "密码格式有错":"okk";
+            })
         })
     </script>
 </body>
