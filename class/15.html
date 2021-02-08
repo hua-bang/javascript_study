@@ -13,13 +13,13 @@
     //  浅拷贝的使用
 
     let hd = {name:"hug"};
-    let cms = hd;   //这一步是深拷贝
+    let cms = hd;   //这一步是浅拷贝
     cms.name = "houduren.com";
     console.log(hd,cms)
 
     let a = {name:"hug"};
     cms = {
-        name: a.name    //相当于取值 若a.name是对象的话，则这里是深拷贝
+        name: a.name    //相当于取值 若a.name是对象的话，则这里是浅拷贝
     }
     console.log(a,cms)
 
