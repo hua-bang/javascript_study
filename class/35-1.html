@@ -19,9 +19,10 @@
         }
         bindDom(){
             document.querySelectorAll("[v-model]").forEach(item => {
-                item.addEventListener("keyup", function() {
-                    let key = this.getAttribute("v-model");
-                    let value = this.value;
+                item.addEventListener("keyup", (event) => {
+                    let target = event.target;
+                    let key = target.getAttribute("v-model");
+                    let value = target.value;
                     document.querySelectorAll(`[v-model="${key}"]`).forEach(inputNode => {
                         inputNode.value = value
                     })
