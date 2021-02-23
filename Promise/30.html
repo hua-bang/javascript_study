@@ -19,7 +19,11 @@
             })
         }
         render(names) {
-            names.reduce((promise, name) => promise.then(() => this.getUser(name)).then((name) => this.view(name)) ,Promise.resolve())
+            names.reduce((promise, name) => promise.then(() => this.getUser(name)).then((name) => this.view(name)) ,Promise.resolve()).finally(() => {
+                setTimeout(() => {
+                    console.log("finally")
+                },1000)
+            })
         }
         view(name) {
             return new Promise(resolve => {
