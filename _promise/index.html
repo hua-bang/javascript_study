@@ -12,11 +12,13 @@
 </body>
 <script>
     let p = new HPromise((resolve,reject) => {
-        reject("err")
+        setTimeout(() => {
+            reject("拒绝");
+        },1000)
     }).then(res => {
         console.log(res);
     },reason => {
         console.log(reason);
-    });
+    })
 </script>
 </html>

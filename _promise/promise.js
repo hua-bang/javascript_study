@@ -7,6 +7,7 @@ class HPromise {
     constructor(executor) {
         this.status = HPromise.PENDING;
         this.value = null;
+        this.callbacks = [];
         try {
             executor(this.resolve.bind(this), this.reject.bind(this));
         } catch (err) {
@@ -18,6 +19,9 @@ class HPromise {
         if (this.status === HPromise.PENDING) {
             this.value = value;
             this.status = HPromise.FULFILLED;
+            this.callbacks.map(callback => {
+                callback.onFulfilled(value);
+            })
         }
     }
 
@@ -25,23 +29,36 @@ class HPromise {
         if (this.status === HPromise.PENDING) {
             this.status = HPromise.REJECTED;
             this.value = reason;
+            this.callbacks.map(callback => {
+                callback.onRejected(reason);
+            })
         }
     }
 
     then(onFulfilled = () => {}, onRejected = () => {}) {
+        if (this.status === HPromise.PENDING) {
+            this.callbacks.push({
+                onFulfilled,
+                onRejected
+            });
+        }
         if (this.status === HPromise.FULFILLED) {
-            try {
-                onFulfilled(this.value);
-            } catch (err) {
-                onRejected(err);
-            }
+            setTimeout(() => {
+                try {
+                    onFulfilled(this.value);
+                } catch (err) {
+                    onRejected(err);
+                }
+            })
         }
         if (this.status === HPromise.REJECTED) {
-            try {
-                onRejected(this.value);
-            } catch (err) {
-                onRejected(err);
-            }
+            setTimeout(() => {
+                try {
+                    onRejected(this.value);
+                } catch (err) {
+                    onRejected(err);
+                }
+            })
         }
     }
 }
