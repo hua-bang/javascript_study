@@ -7,17 +7,41 @@ class HPromise {
     constructor(executor) {
         this.status = HPromise.PENDING;
         this.value = null;
-        executor(this.resolve.bind(this), this.reject.bind(this));
+        try {
+            executor(this.resolve.bind(this), this.reject.bind(this));
+        } catch (err) {
+            this.reject(err);
+        }
     }
 
     resolve(value) {
-        // 直接调用executor 这里的this并非当前对象，而是window
-        this.value = value;
-        this.status = HPromise.FULFILLED;
+        if (this.status === HPromise.PENDING) {
+            this.value = value;
+            this.status = HPromise.FULFILLED;
+        }
     }
 
     reject(reason) {
-        this.status = HPromise.REJECTED;
-        this.value = reason;
+        if (this.status === HPromise.PENDING) {
+            this.status = HPromise.REJECTED;
+            this.value = reason;
+        }
+    }
+
+    then(onFulfilled = () => {}, onRejected = () => {}) {
+        if (this.status === HPromise.FULFILLED) {
+            try {
+                onFulfilled(this.value);
+            } catch (err) {
+                onRejected(err);
+            }
+        }
+        if (this.status === HPromise.REJECTED) {
+            try {
+                onRejected(this.value);
+            } catch (err) {
+                onRejected(err);
+            }
+        }
     }
 }

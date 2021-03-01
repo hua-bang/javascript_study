@@ -12,8 +12,11 @@
 </body>
 <script>
     let p = new HPromise((resolve,reject) => {
-        resolve(123);
-        reject("reject")
+        reject("err")
+    }).then(res => {
+        console.log(res);
+    },reason => {
+        console.log(reason);
     });
 </script>
 </html>
