@@ -14,11 +14,13 @@
     let p = new HPromise((resolve,reject) => {
         setTimeout(() => {
             reject("拒绝");
+            console.log("向军大叔");
         },1000)
     }).then(res => {
         console.log(res);
     },reason => {
         console.log(reason);
-    })
+    });
+    console.log("后盾人");
 </script>
 </html>

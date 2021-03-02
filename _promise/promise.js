@@ -19,8 +19,10 @@ class HPromise {
         if (this.status === HPromise.PENDING) {
             this.value = value;
             this.status = HPromise.FULFILLED;
-            this.callbacks.map(callback => {
-                callback.onFulfilled(value);
+            setTimeout(() => {
+                this.callbacks.map(callback => {
+                    callback.onFulfilled(value);
+                })
             })
         }
     }
@@ -29,8 +31,10 @@ class HPromise {
         if (this.status === HPromise.PENDING) {
             this.status = HPromise.REJECTED;
             this.value = reason;
-            this.callbacks.map(callback => {
-                callback.onRejected(reason);
+            setTimeout(() => {
+                this.callbacks.map(callback => {
+                    callback.onRejected(reason);
+                })
             })
         }
     }
@@ -38,8 +42,12 @@ class HPromise {
     then(onFulfilled = () => {}, onRejected = () => {}) {
         if (this.status === HPromise.PENDING) {
             this.callbacks.push({
-                onFulfilled,
-                onRejected
+                onFulfilled: value => {
+                    onFulfilled(value)
+                },
+                onRejected: value => {
+                    onRejected(value);
+                }
             });
         }
         if (this.status === HPromise.FULFILLED) {
