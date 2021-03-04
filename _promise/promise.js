@@ -39,34 +39,67 @@ class HPromise {
         }
     }
 
-    then(onFulfilled = () => {}, onRejected = () => {}) {
-        if (this.status === HPromise.PENDING) {
-            this.callbacks.push({
-                onFulfilled: value => {
-                    onFulfilled(value)
-                },
-                onRejected: value => {
-                    onRejected(value);
-                }
-            });
-        }
-        if (this.status === HPromise.FULFILLED) {
-            setTimeout(() => {
-                try {
-                    onFulfilled(this.value);
-                } catch (err) {
-                    onRejected(err);
-                }
-            })
-        }
-        if (this.status === HPromise.REJECTED) {
-            setTimeout(() => {
-                try {
-                    onRejected(this.value);
-                } catch (err) {
-                    onRejected(err);
-                }
-            })
-        }
+    then(onFulfilled = value => value, onRejected = error => error) {
+        return new HPromise((resolve, reject) => {
+            if (this.status === HPromise.PENDING) {
+                this.callbacks.push({
+                    onFulfilled: value => {
+                        try {
+                            let res = onFulfilled(value);
+                            if (res instanceof HPromise) {
+                                res.then(v => {
+                                    resolve(v);
+                                })
+                            } else {
+                                resolve(res);
+                            }
+                        } catch (err) {
+                            reject(err);
+                        }
+                    },
+                    onRejected: value => {
+                        try {
+                            let res = onRejected(value);
+                            if (res instanceof HPromise) {
+                                res.then(resolve, reject);
+                            } else {
+                                resolve(res);
+                            }
+                        } catch (err) {
+                            console.log(err);
+                            reject(err);
+                        }
+                    }
+                });
+            }
+            if (this.status === HPromise.FULFILLED) {
+                setTimeout(() => {
+                    try {
+                        let res = onFulfilled(this.value);
+                        if (res instanceof HPromise) {
+                            res.then(resolve, reject);
+                        } else {
+                            resolve(res);
+                        }
+                    } catch (err) {
+                        reject(err);
+                    }
+                })
+            }
+            if (this.status === HPromise.REJECTED) {
+                setTimeout(() => {
+                    try {
+                        let res = onRejected(this.value);
+                        if (res instanceof HPromise) {
+                            res.then(resolve, reject);
+                        } else {
+                            resolve(res);
+                        }
+                    } catch (err) {
+                        reject(err);
+                    }
+                })
+            }
+        })
     }
 }
